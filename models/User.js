@@ -1,0 +1,25 @@
+const { Schema, model } = require('mongoose');
+const PLM = require('passport-local-mongoose');
+
+const userSchema = new Schema(
+  {
+    email: String,
+    name: String,
+    photo: {
+      type: String,
+      default: "https://www.cardiff.ac.uk/__data/assets/image/0014/10841/no-profile.jpg"
+    },
+    nativeLanguage : {
+      type : String,
+      enum : ["English", "Spanish", "Japanese", "Chinese", "French", "Italian", "Russian", "German"]
+    },
+    learnLanguage : {
+      type : String,
+      enum : ["English", "Spanish", "Japanese", "Chinese", "French", "Italian", "Russian", "German"]
+    },
+  }
+);
+
+userSchema.plugin(PLM, { usernameField: 'email' });
+
+module.exports = model('User', userSchema);
