@@ -40,4 +40,10 @@ function isAuth(req, res, next) {
   req.isAuthenticated() ? next() : res.status(401).json({ msg: 'Log in first' });
 }
 
+//User Detail//
+router.get("/search/:userId", async(req, res)=>{
+  const user  = await User.findById(req.params.user)
+  res.status(200).json({ user })
+});
+
 module.exports = router;
