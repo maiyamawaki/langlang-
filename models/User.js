@@ -17,6 +17,8 @@ const userSchema = new Schema(
       type : String,
       enum : ["English", "Spanish", "Japanese", "Chinese", "French", "Italian", "Russian", "German"]
     },
+    hobby:String,
+    comments : Array,
   }
 );
 

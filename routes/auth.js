@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const passport = require('../config/passport');
+const Comment = require("../models/Comment")
 
 router.post('/signup', (req, res, next) => {
   User.register(req.body, req.body.password)
@@ -25,11 +26,6 @@ router.get('/profile', isAuth, (req, res, next) => {
     .catch((err) => res.status(500).json({ err }));
 });
 
-router.get("/search", isAuth, async(req, res) => {
-  const users = await User.find()
-  res.status(200).json({ users })
-})
-
 router.put("/photo", async (req, res) => {
   const { photo } = req.body
   await User.findByIdAndUpdate(req.user.id, { photo })
@@ -40,10 +36,36 @@ function isAuth(req, res, next) {
   req.isAuthenticated() ? next() : res.status(401).json({ msg: 'Log in first' });
 }
 
+
+//UsersView
+router.get("/search", isAuth, async(req, res) => {
+  const users = await User.find()
+  res.status(200).json({ users })
+})
+
 //User Detail//
 router.get("/search/:userId", async(req, res)=>{
-  const user  = await User.findById(req.params.user)
+  const user  = await User.findById(req.params.userId)
   res.status(200).json({ user })
 });
+
+//Comment
+router.post("/search/:userId",async(req, res) => {
+  const {userId} = req.params;
+  const {context} = req.body
+  const newComment = await Comment.create({
+    context,
+    owner : req.user.id,
+  })
+  await User.findByIdAndUpdate(userId, {$push : {comments : newComment}})
+  res.status(201).json({ newComment })
+}
+) 
+
+router.get("/search/:userId", async(req, res)=>{
+  const {userId} = req.params;
+  const comments = await Comment.findById(userId);
+  res.status(201).json({ comments })
+})
 
 module.exports = router;
