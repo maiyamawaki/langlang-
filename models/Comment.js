@@ -3,10 +3,11 @@ const { Schema, model }= require("mongoose")
 const commentSchema = new Schema(
 	{
     context: String,
-		owner : {
+		ownerId : {
       type: Schema.Types,
       ref: "User"
-		}
+    },
+    owner : String,
   },
   {
     timestamps: true

@@ -49,23 +49,22 @@ router.get("/search/:userId", async(req, res)=>{
   res.status(200).json({ user })
 });
 
+
 //Comment
 router.post("/search/:userId",async(req, res) => {
   const {userId} = req.params;
   const {context} = req.body
+  const owner = req.user.name
   const newComment = await Comment.create({
     context,
-    owner : req.user.id,
+    ownerId : req.user.id,
+    owner : owner,
   })
+  console.log(newComment)
   await User.findByIdAndUpdate(userId, {$push : {comments : newComment}})
   res.status(201).json({ newComment })
 }
 ) 
 
-router.get("/search/:userId", async(req, res)=>{
-  const {userId} = req.params;
-  const comments = await Comment.findById(userId);
-  res.status(201).json({ comments })
-})
 
 module.exports = router;
