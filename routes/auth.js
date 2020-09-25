@@ -27,19 +27,27 @@ router.get('/profile', isAuth, (req, res, next) => {
     .catch((err) => res.status(500).json({ err }));
 });
 
-// router.put("/profile", isAuth, async(req,res)=>{
-//   const {userId} = req.user._id
-//   const {name} = req.body;
-//   const userUpdate = await User.findByIdAndUpdate(userId,{
-//   name
-//   })
-//   res.status(200).json({ userUpdate })
-// })
-
 router.put("/photo", async (req, res) => {
   const { photo } = req.body
   await User.findByIdAndUpdate(req.user.id, { photo })
   res.status(200).json({ message: "success" })
+})
+
+router.get("/profile/editProfile", async(req,res)=>{
+  const user = await User.findById(req.user._id);
+  console.log(user);
+  res.status(200).json({ user })
+})
+
+router.put("/profile/editProfile", async(req, res)=>{
+  const {learnLanguage, hobby, about} = req.body;
+  const updatedPorfile = await User.findByIdAndUpdate(req.user._id,{
+    learnLanguage,
+    hobby,
+    about
+  })
+  console.log(updatedPorfile);
+  res.status(200).json({updatedPorfile})
 })
 
 
@@ -76,6 +84,15 @@ router.post("/search/:userId",async(req, res) => {
   res.status(201).json({ newComment })
 }
 ) 
+
+//Delete comment
+router.delete("/profile", async(req, res)=>{
+  const {messageId} =  req.body
+  const msgDelete = await Comment.findById(messageId)
+  console.log(msgDelete)
+  await User.findByIdAndUpdate(req.user._id, {$pop : {comments : (msgDelete, 1)}})
+  res.status(201).json({message : "delete success"})
+})
 
 //Info page
 router.get("/profile/info", isAuth, async (req, res)=>{
