@@ -19,6 +19,7 @@ const userSchema = new Schema(
     },
     hobby:String,
     comments : Array,
+    infos : Array,
   }
 );
 
