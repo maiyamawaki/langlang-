@@ -87,10 +87,9 @@ router.post("/search/:userId",async(req, res) => {
 
 //Delete comment
 router.delete("/profile", async(req, res)=>{
-  const {messageId} =  req.body
-  const msgDelete = await Comment.findById(messageId)
-  console.log(msgDelete)
-  await User.findByIdAndUpdate(req.user._id, {$pop : {comments : (msgDelete, 1)}})
+  const {messageId} =  req.body   
+  // const msgDelete = await Comment.findById(messageId)
+  await User.findByIdAndUpdate(req.user.id, {$pop : {comments : (messageId, 1)}})
   res.status(201).json({message : "delete success"})
 })
 
