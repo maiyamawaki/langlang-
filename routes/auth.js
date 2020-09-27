@@ -85,11 +85,25 @@ router.post("/search/:userId",async(req, res) => {
 }
 ) 
 
+//view comments
+router.get("/profile/msgs", async(req, res)=>{
+  const user = await User.findById(req.user._id)
+  res.status(200).json({user})
+})
+
+//Delete confirm page
+router.get("/msgs/:msgId", async(req, res)=>{
+  const{ msgId } = req.params; 
+  const msg = await Comment.findById(msgId)
+  res.status(200).json({msg})
+})
+
 //Delete comment
-router.delete("/profile", async(req, res)=>{
-  const {messageId} =  req.body   
-  // const msgDelete = await Comment.findById(messageId)
-  await User.findByIdAndUpdate(req.user.id, {$pop : {comments : (messageId, 1)}})
+router.delete("/msgs/:msgId", async(req, res)=>{
+  const{ msgId } = req.params;  
+  const msgDelete = await Comment.findById(msgId)
+  console.log(msgDelete)
+  await User.findByIdAndUpdate(req.user.id, {$pull : {comments : msgDelete}})
   res.status(201).json({message : "delete success"})
 })
 
