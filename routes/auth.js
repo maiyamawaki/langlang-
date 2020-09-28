@@ -6,11 +6,13 @@ const Comment = require("../models/Comment")
 const Info = require("../models/Info")
 const StudyMaterial = require("../models/StudyMaterial.js")
 
+
+
 router.post('/signup', (req, res, next) => {
   User.register(req.body, req.body.password)
     .then((user) => res.status(201).json({ user }))
     .catch((err) => res.status(500).json({ err }));
-});
+}); 
 
 router.post('/login', passport.authenticate('local'), (req, res, next) => {
   const { user } = req;
@@ -34,7 +36,7 @@ router.put("/photo", async (req, res) => {
   res.status(200).json({ message: "success" })
 })
 
-router.get("/profile/editProfile",  isAuth, async(req,res)=>{
+router.get("/profile/editProfile",  isAuth,  async(req,res)=>{
   const user = await User.findById(req.user._id);
   console.log(user);
   res.status(200).json({ user })
@@ -58,7 +60,7 @@ function isAuth(req, res, next) {
 
 
 //UsersView
-router.get("/search", isAuth, async(req, res) => {
+router.get("/search",  async(req, res) => {
   const users = await User.find()
   res.status(200).json({ users })
 })

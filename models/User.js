@@ -13,11 +13,11 @@ const userSchema = new Schema(
     },
     nativeLanguage : {
       type : String,
-      enum : ["English", "Spanish", "Japanese", "	Mandarin Chinese", "French", "Italian", "Russian", "German", "Hindi","Portuguese","Arabic", "Bengali"]
+      enum : ["English", "Spanish", "Japanese", "	Mandarin Chinese", "French", "Italian", "Russian", "German", "Hindi","Portuguese","Arabic", "Bengali", ""]
     },
     learnLanguage : {
       type : String,
-      enum : ["English", "Spanish", "Japanese", "	Mandarin Chinese", "French", "Italian", "Russian", "German", "Hindi","Portuguese","Arabic", "Bengali"]
+      enum : ["English", "Spanish", "Japanese", "	Mandarin Chinese", "French", "Italian", "Russian", "German", "Hindi","Portuguese","Arabic", "Bengali","Korean"]
     },
     hobby:String,
     about:String,
