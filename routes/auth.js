@@ -4,6 +4,7 @@ const User = require('../models/User');
 const passport = require('../config/passport');
 const Comment = require("../models/Comment")
 const Info = require("../models/Info")
+const StudyMaterial = require("../models/StudyMaterial.js")
 
 router.post('/signup', (req, res, next) => {
   User.register(req.body, req.body.password)
@@ -33,13 +34,13 @@ router.put("/photo", async (req, res) => {
   res.status(200).json({ message: "success" })
 })
 
-router.get("/profile/editProfile", async(req,res)=>{
+router.get("/profile/editProfile",  isAuth, async(req,res)=>{
   const user = await User.findById(req.user._id);
   console.log(user);
   res.status(200).json({ user })
 })
 
-router.put("/profile/editProfile", async(req, res)=>{
+router.put("/profile/editProfile",  isAuth, async(req, res)=>{
   const {learnLanguage, hobby, about} = req.body;
   const updatedPorfile = await User.findByIdAndUpdate(req.user._id,{
     learnLanguage,
@@ -63,14 +64,14 @@ router.get("/search", isAuth, async(req, res) => {
 })
 
 //User Detail//
-router.get("/search/:userId", async(req, res)=>{
+router.get("/search/:userId", isAuth, async(req, res)=>{
   const user  = await User.findById(req.params.userId)
   res.status(200).json({ user })
 });
 
 
 //Create comment 
-router.post("/search/:userId",async(req, res) => {
+router.post("/search/:userId", isAuth, async(req, res) => {
   const {userId} = req.params;
   const {context} = req.body
   const owner = req.user.name
@@ -86,20 +87,20 @@ router.post("/search/:userId",async(req, res) => {
 ) 
 
 //view comments
-router.get("/profile/msgs", async(req, res)=>{
+router.get("/profile/msgs",  isAuth, async(req, res)=>{
   const user = await User.findById(req.user._id)
   res.status(200).json({user})
 })
 
 //Delete confirm page
-router.get("/msgs/:msgId", async(req, res)=>{
+router.get("/msgs/:msgId",  isAuth, async(req, res)=>{
   const{ msgId } = req.params; 
   const msg = await Comment.findById(msgId)
   res.status(200).json({msg})
 })
 
 //Delete comment
-router.delete("/msgs/:msgId", async(req, res)=>{
+router.delete("/msgs/:msgId",  isAuth, async(req, res)=>{
   const{ msgId } = req.params;  
   const msgDelete = await Comment.findById(msgId)
   console.log(msgDelete)
@@ -129,6 +130,57 @@ router.post("/profile/info", isAuth, async(req, res) => {
   res.status(200).json({newInfo})
 })
 
+//Info delete confirm page
+router.get("/info/:infoId",  isAuth, async(req, res)=>{
+  const { infoId } = req.params; 
+  const info = await Info.findById(infoId)
+  res.status(200).json({info})
+})
 
+//Delete info
+router.delete("/info/:infoId",  isAuth, async(req, res)=>{
+  const { infoId } = req.params;  
+  const info = await Info.findById(infoId)
+  await User.findByIdAndUpdate(req.user.id, {$pull : {infos : info}})
+  res.status(200).json({message : "deleted"})
+})
+
+//material
+router.get("/profile/material",isAuth, async(req, res)=>{
+  const materials = await StudyMaterial.find().populate("materials");
+  res.status(200).json({ materials });
+})
+
+//create material
+router.post("/profile/material", isAuth, async(req, res)=>{
+  const {title, photo, description} = req.body;
+  const owner = req.user.name
+  const newMaterial = await StudyMaterial.create({
+    title,
+    photo,
+    description,
+    ownerId : req.user.id,
+    owner : owner
+  })
+  console.log(newMaterial)
+  await User.findByIdAndUpdate(req.user.id, {$push : {materials : newMaterial}})
+  res.status(200).json({newMaterial})
+})
+
+//Delete confirm page
+router.get("/material/:materialId",  isAuth, async(req, res)=>{
+  const { materialId } = req.params; 
+  const material = await StudyMaterial.findById(materialId)
+  res.status(200).json({material})
+})
+
+//Delete StudyMaterial
+router.delete("/material/:materialId",  isAuth, async(req, res)=>{
+  const { materialId } = req.params;  
+  console.log(materialId)
+  const material = await StudyMaterial.findById(materialId)
+  await User.findByIdAndUpdate(req.user.id, {$pull : {materials : material}})
+  res.status(200).json({material})
+})
 
 module.exports = router;
