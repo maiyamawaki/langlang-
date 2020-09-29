@@ -101,6 +101,7 @@ router.get("/msgs/:msgId",  isAuth, async(req, res)=>{
   res.status(200).json({msg})
 })
 
+
 //Delete comment
 router.delete("/msgs/:msgId",  isAuth, async(req, res)=>{
   const{ msgId } = req.params;  
@@ -145,6 +146,21 @@ router.delete("/info/:infoId",  isAuth, async(req, res)=>{
   const info = await Info.findById(infoId)
   await User.findByIdAndUpdate(req.user.id, {$pull : {infos : info}})
   res.status(200).json({message : "deleted"})
+})
+
+//Update info
+router.put("/info/:infoId", isAuth, async(req,res)=>{
+  const { infoId }= req.params;
+  const {title, photo, description} = req.body;
+  const owner = req.user.name
+  const updatedInfo =  await Info.findByIdAndUpdate(infoId, {
+    title,
+    photo,
+    description,
+    ownerId : req.user.id,
+    owner : owner
+  })
+  res.status(200).json({message : "updated"})
 })
 
 //material
