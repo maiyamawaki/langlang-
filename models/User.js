@@ -23,7 +23,7 @@ const userSchema = new Schema(
     about:String,
     comments : Array,
     infos : Array,
-    materials : Array,
+    materials : Array
   }
 );
 

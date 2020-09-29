@@ -49,7 +49,6 @@ router.put("/profile/editProfile",  isAuth, async(req, res)=>{
     hobby,
     about
   })
-  console.log(updatedPorfile);
   res.status(200).json({updatedPorfile})
 })
 
@@ -69,7 +68,7 @@ router.get("/search",  async(req, res) => {
 router.get("/search/:userId", isAuth, async(req, res)=>{
   const user  = await User.findById(req.params.userId)
   res.status(200).json({ user })
-});
+})
 
 
 //Create comment 
@@ -145,22 +144,8 @@ router.delete("/info/:infoId",  isAuth, async(req, res)=>{
   const { infoId } = req.params;  
   const info = await Info.findById(infoId)
   await User.findByIdAndUpdate(req.user.id, {$pull : {infos : info}})
+  console.log(info)
   res.status(200).json({message : "deleted"})
-})
-
-//Update info
-router.put("/info/:infoId", isAuth, async(req,res)=>{
-  const { infoId }= req.params;
-  const {title, photo, description} = req.body;
-  const owner = req.user.name
-  const updatedInfo =  await Info.findByIdAndUpdate(infoId, {
-    title,
-    photo,
-    description,
-    ownerId : req.user.id,
-    owner : owner
-  })
-  res.status(200).json({message : "updated"})
 })
 
 //material
