@@ -78,7 +78,7 @@ router.get("/search/:userId", isAuth, async(req, res)=>{
 
 
 // post Create msg 
-router.post("/search/:userId", isAuth, async(req, res) => {
+router.post("/message/:userId", isAuth, async(req, res) => {
   const {userId} = req.params;
   const {context} = req.body
   const owner = req.user.name
@@ -87,9 +87,8 @@ router.post("/search/:userId", isAuth, async(req, res) => {
     ownerId : req.user.id,
     owner : owner,
   })
-  console.log(newComment)
-  await User.findByIdAndUpdate(userId, {$push : {comments : newComment}})
-  res.status(201).json({ newComment })
+  const userUpdate = await User.findByIdAndUpdate(userId, {$push : {comments : newComment}})
+  res.status(201).json({ userUpdate })
 }
 ) 
 
@@ -108,12 +107,12 @@ router.get("/msgs/:msgId",  isAuth, async(req, res)=>{
 
 
 //Delete msg
-router.delete("/msgs/:msgId",  isAuth, async(req, res)=>{
+router.delete("/deletemsg/:msgId",  isAuth, async(req, res)=>{
   const{ msgId } = req.params;  
   const msgDelete = await Comment.findById(msgId)
   console.log(msgDelete)
-  await User.findByIdAndUpdate(req.user.id, {$pull : {comments : msgDelete}})
-  res.status(201).json({message : "delete success"})
+  const updateUser = await User.findByIdAndUpdate(req.user.id, {$pull : {comments : msgDelete}})
+  res.status(201).json({updateUser})
 })
 
 //get Info page
@@ -123,7 +122,7 @@ router.get("/profile/info", isAuth, async (req, res)=>{
 })
 
 //post Info create
-router.post("/profile/info", isAuth, async(req, res) => {
+router.post("/createinfo/info", isAuth, async(req, res) => {
   const {title, photo, description} = req.body
   const owner = req.user.name
   const newInfo = await Info.create({
@@ -134,8 +133,8 @@ router.post("/profile/info", isAuth, async(req, res) => {
     owner : owner,
   })
   console.log(newInfo)
-  await User.findByIdAndUpdate(req.user.id, {$push : {infos :  newInfo}})
-  res.status(200).json({newInfo})
+  const updateUser = await User.findByIdAndUpdate(req.user.id, {$push : {infos :  newInfo}})
+  res.status(200).json({updateUser})
 })
 
 //get Info delete confirm page
@@ -149,9 +148,9 @@ router.get("/info/:infoId",  isAuth, async(req, res)=>{
 router.delete("/info/:infoId",  isAuth, async(req, res)=>{
   const { infoId } = req.params;  
   const info = await Info.findById(infoId)
-  await User.findByIdAndUpdate(req.user.id, {$pull : {infos : info}})
+  const updateUser = await User.findByIdAndUpdate(req.user.id, {$pull : {infos : info}})
   console.log(info)
-  res.status(200).json({message : "deleted"})
+  res.status(200).json({message : updateUser })
 })
 
 //get material
@@ -172,8 +171,8 @@ router.post("/profile/material", isAuth, async(req, res)=>{
     owner : owner
   })
   console.log(newMaterial)
-  await User.findByIdAndUpdate(req.user.id, {$push : {materials : newMaterial}})
-  res.status(200).json({newMaterial})
+  const updateUser = await User.findByIdAndUpdate(req.user.id, {$push : {materials : newMaterial}})
+  res.status(200).json({updateUser})
 })
 
 //get Delete confirm page
@@ -188,8 +187,8 @@ router.delete("/material/:materialId",  isAuth, async(req, res)=>{
   const { materialId } = req.params;  
   console.log(materialId)
   const material = await StudyMaterial.findById(materialId)
-  await User.findByIdAndUpdate(req.user.id, {$pull : {materials : material}})
-  res.status(200).json({material})
+  const updateUser = await User.findByIdAndUpdate(req.user.id, {$pull : {materials : material}})
+  res.status(200).json({updateUser})
 })
 
 module.exports = router;
