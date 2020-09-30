@@ -7,41 +7,47 @@ const Info = require("../models/Info")
 const StudyMaterial = require("../models/StudyMaterial.js")
 
 
-
+//signup
 router.post('/signup', (req, res, next) => {
   User.register(req.body, req.body.password)
     .then((user) => res.status(201).json({ user }))
     .catch((err) => res.status(500).json({ err }));
 }); 
 
+//login
 router.post('/login', passport.authenticate('local'), (req, res, next) => {
   const { user } = req;
   res.status(200).json({ user });
 });
 
+//logout
 router.get('/logout', (req, res, next) => {
   req.logout();
   res.status(200).json({ msg: 'Logged out' });
 });
 
+//get profile
 router.get('/profile', isAuth, (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => res.status(200).json({ user : req.user}))
     .catch((err) => res.status(500).json({ err }));
 });
 
+//update photo
 router.put("/photo", async (req, res) => {
   const { photo } = req.body
   await User.findByIdAndUpdate(req.user.id, { photo })
   res.status(200).json({ message: "success" })
 })
 
+//get edit profile page
 router.get("/profile/editProfile",  isAuth,  async(req,res)=>{
   const user = await User.findById(req.user._id);
   console.log(user);
   res.status(200).json({ user })
 })
 
+//put profile
 router.put("/profile/editProfile",  isAuth, async(req, res)=>{
   const {learnLanguage, hobby, about} = req.body;
   const updatedPorfile = await User.findByIdAndUpdate(req.user._id,{
@@ -58,20 +64,20 @@ function isAuth(req, res, next) {
 }
 
 
-//UsersView
+//get UsersView
 router.get("/search",  async(req, res) => {
   const users = await User.find()
   res.status(200).json({ users })
 })
 
-//User Detail//
+//get User Detail//
 router.get("/search/:userId", isAuth, async(req, res)=>{
   const user  = await User.findById(req.params.userId)
   res.status(200).json({ user })
 })
 
 
-//Create comment 
+// post Create msg 
 router.post("/search/:userId", isAuth, async(req, res) => {
   const {userId} = req.params;
   const {context} = req.body
@@ -87,13 +93,13 @@ router.post("/search/:userId", isAuth, async(req, res) => {
 }
 ) 
 
-//view comments
+//get view msg
 router.get("/profile/msgs",  isAuth, async(req, res)=>{
   const user = await User.findById(req.user._id)
   res.status(200).json({user})
 })
 
-//Delete confirm page
+//get delete confirm page
 router.get("/msgs/:msgId",  isAuth, async(req, res)=>{
   const{ msgId } = req.params; 
   const msg = await Comment.findById(msgId)
@@ -101,7 +107,7 @@ router.get("/msgs/:msgId",  isAuth, async(req, res)=>{
 })
 
 
-//Delete comment
+//Delete msg
 router.delete("/msgs/:msgId",  isAuth, async(req, res)=>{
   const{ msgId } = req.params;  
   const msgDelete = await Comment.findById(msgId)
@@ -110,13 +116,13 @@ router.delete("/msgs/:msgId",  isAuth, async(req, res)=>{
   res.status(201).json({message : "delete success"})
 })
 
-//Info page
+//get Info page
 router.get("/profile/info", isAuth, async (req, res)=>{
   const allInfos = await Info.find().populate("infos")
   res.status(200).json({ allInfos });
 })
 
-//Info create
+//post Info create
 router.post("/profile/info", isAuth, async(req, res) => {
   const {title, photo, description} = req.body
   const owner = req.user.name
@@ -132,7 +138,7 @@ router.post("/profile/info", isAuth, async(req, res) => {
   res.status(200).json({newInfo})
 })
 
-//Info delete confirm page
+//get Info delete confirm page
 router.get("/info/:infoId",  isAuth, async(req, res)=>{
   const { infoId } = req.params; 
   const info = await Info.findById(infoId)
@@ -148,13 +154,13 @@ router.delete("/info/:infoId",  isAuth, async(req, res)=>{
   res.status(200).json({message : "deleted"})
 })
 
-//material
+//get material
 router.get("/profile/material",isAuth, async(req, res)=>{
   const materials = await StudyMaterial.find().populate("materials");
   res.status(200).json({ materials });
 })
 
-//create material
+//post create material
 router.post("/profile/material", isAuth, async(req, res)=>{
   const {title, photo, description} = req.body;
   const owner = req.user.name
@@ -170,7 +176,7 @@ router.post("/profile/material", isAuth, async(req, res)=>{
   res.status(200).json({newMaterial})
 })
 
-//Delete confirm page
+//get Delete confirm page
 router.get("/material/:materialId",  isAuth, async(req, res)=>{
   const { materialId } = req.params; 
   const material = await StudyMaterial.findById(materialId)
